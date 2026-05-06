@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
-import Image from 'next/image'
 
 export default function LoginPage() {
     const router = useRouter()
@@ -18,7 +17,7 @@ export default function LoginPage() {
         setLoading(true)
 
         try {
-            const response = await api.post('/login.php', { email, password })
+            const response = await api.client.post('/login.php', { email, password })
 
             if (response.data.success) {
                 const { token, user } = response.data.data
@@ -36,20 +35,18 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-navy-deep via-navy to-navy-dark flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-[#0b1a42] via-[#1c3877] to-[#1c3877] flex items-center justify-center p-4">
             <div className="max-w-md w-full">
-                {/* Logo */}
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full mb-4 shadow-lg">
                         <span className="text-3xl">🏫</span>
                     </div>
-                    <h1 className="text-3xl font-playfair font-bold text-white">Mighty School for Valours</h1>
-                    <p className="text-gold-light mt-2">School Management Portal</p>
+                    <h1 className="text-3xl font-bold text-white">Mighty School for Valours</h1>
+                    <p className="text-[#f0e0a8] mt-2">School Management Portal</p>
                 </div>
 
-                {/* Login Card */}
                 <div className="bg-white rounded-2xl shadow-xl p-8">
-                    <h2 className="text-2xl font-bold text-navy mb-6">Welcome Back</h2>
+                    <h2 className="text-2xl font-bold text-[#1c3877] mb-6">Welcome Back</h2>
 
                     <form onSubmit={handleSubmit}>
                         <div className="mb-4">
@@ -58,7 +55,7 @@ export default function LoginPage() {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="input"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1c3877] focus:border-transparent"
                                 placeholder="admin@msv.edu.ng"
                                 required
                             />
@@ -70,7 +67,7 @@ export default function LoginPage() {
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="input"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1c3877] focus:border-transparent"
                                 placeholder="••••••••"
                                 required
                             />
@@ -85,7 +82,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="btn-primary w-full py-3 text-lg"
+                            className="w-full bg-[#e23639] text-white py-3 rounded-lg font-semibold hover:bg-[#b82c2e] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? (
                                 <span className="flex items-center justify-center gap-2">
@@ -100,13 +97,6 @@ export default function LoginPage() {
                             )}
                         </button>
                     </form>
-
-                    <div className="mt-6 text-center text-sm text-gray-500">
-                        <p>Demo Credentials:</p>
-                        <p className="text-xs">admin@msv.edu.ng / password</p>
-                        <p className="text-xs">staff@msv.edu.ng / password</p>
-                        <p className="text-xs">parent@msv.edu.ng / password</p>
-                    </div>
                 </div>
             </div>
         </div>
