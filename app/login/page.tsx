@@ -17,15 +17,15 @@ export default function LoginPage() {
         setLoading(true)
 
         try {
-            const response = await api.client.post('/login.php', { email, password })
+            const response = await api.login(email, password)
 
-            if (response.data.success) {
-                const { token, user } = response.data.data
+            if (response.success) {
+                const { token, user } = response.data
                 localStorage.setItem('token', token)
                 localStorage.setItem('user', JSON.stringify(user))
                 router.push('/dashboard')
             } else {
-                setError(response.data.error || 'Login failed')
+                setError(response.error || 'Login failed')
             }
         } catch (err: any) {
             setError(err.response?.data?.error || 'Login failed. Please try again.')
@@ -97,6 +97,11 @@ export default function LoginPage() {
                             )}
                         </button>
                     </form>
+
+                    <div className="mt-6 text-center text-sm text-gray-500">
+                        <p>Demo Credentials (use your actual database users):</p>
+                        <p className="text-xs">admin@msv.edu.ng / your_password</p>
+                    </div>
                 </div>
             </div>
         </div>

@@ -32,29 +32,20 @@ apiClient.interceptors.response.use(
     }
 )
 
-// Named exports for specific API functions
+// Auth endpoints
+export const login = async (email: string, password: string) => {
+    const response = await apiClient.post('/auth/login.php', { email, password })
+    return response.data
+}
+
+// Student endpoints
 export const fetchStudents = async () => {
     const response = await apiClient.get('/students/index.php')
     return response.data
 }
 
-export const fetchStaff = async () => {
-    const response = await apiClient.get('/staff/index.php')
-    return response.data
-}
-
-export const fetchParents = async () => {
-    const response = await apiClient.get('/parents/index.php')
-    return response.data
-}
-
-export const fetchClasses = async () => {
-    const response = await apiClient.get('/classes/index.php')
-    return response.data
-}
-
-export const fetchDashboardStats = async () => {
-    const response = await apiClient.get('/dashboard/stats.php')
+export const fetchStudentById = async (id: number) => {
+    const response = await apiClient.get(`/students/single.php?id=${id}`)
     return response.data
 }
 
@@ -73,17 +64,55 @@ export const deleteStudent = async (id: number) => {
     return response.data
 }
 
+// Staff endpoints
+export const fetchStaff = async () => {
+    const response = await apiClient.get('/staff/index.php')
+    return response.data
+}
+
+export const createStaff = async (data: any) => {
+    const response = await apiClient.post('/staff/index.php', data)
+    return response.data
+}
+
+// Parent endpoints
+export const fetchParents = async () => {
+    const response = await apiClient.get('/parents/index.php')
+    return response.data
+}
+
+export const createParent = async (data: any) => {
+    const response = await apiClient.post('/parents/index.php', data)
+    return response.data
+}
+
+// Class endpoints
+export const fetchClasses = async () => {
+    const response = await apiClient.get('/classes/index.php')
+    return response.data
+}
+
+// Dashboard endpoints
+export const fetchDashboardStats = async () => {
+    const response = await apiClient.get('/dashboard/stats.php')
+    return response.data
+}
+
 // Default export for simple usage
 const api = {
     client: apiClient,
+    login,
     fetchStudents,
-    fetchStaff,
-    fetchParents,
-    fetchClasses,
-    fetchDashboardStats,
+    fetchStudentById,
     createStudent,
     updateStudent,
     deleteStudent,
+    fetchStaff,
+    createStaff,
+    fetchParents,
+    createParent,
+    fetchClasses,
+    fetchDashboardStats,
 }
 
 export default api
