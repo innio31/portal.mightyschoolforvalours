@@ -98,6 +98,24 @@ export const fetchDashboardStats = async () => {
     return response.data
 }
 
+// Enrollment endpoints
+export const enrollStudent = async (studentId: number, classArmId: number) => {
+    const response = await apiClient.post('/students/enroll.php', {
+        student_id: studentId,
+        class_arm_id: classArmId,
+    })
+    return response.data
+}
+
+export const changeStudentClass = async (studentId: number, classArmId: number, sessionId: number) => {
+    const response = await apiClient.put('/students/change-class.php', {
+        student_id: studentId,
+        class_arm_id: classArmId,
+        session_id: sessionId,
+    })
+    return response.data
+}
+
 // Default export for simple usage
 const api = {
     client: apiClient,
@@ -113,6 +131,8 @@ const api = {
     createParent,
     fetchClasses,
     fetchDashboardStats,
+    enrollStudent,
+    changeStudentClass,
 }
 
 export default api
