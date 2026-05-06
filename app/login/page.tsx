@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import api from '@/lib/api'
 import Image from 'next/image'
 
 export default function LoginPage() {
@@ -17,54 +18,18 @@ export default function LoginPage() {
         setLoading(true)
 
         try {
-            // TODO: Replace with actual API call to your backend
-            // POST /api/auth/login
-            // Expected response: { token, user: { id, role, first_name, last_name, email, school_id } }
+            const response = await api.post('/login.php', { email, password })
 
-            // Mock login for demo - REMOVE when backend is ready
-            await new Promise(resolve => setTimeout(resolve, 800))
-
-            if (email === 'admin@msv.edu.ng' && password === 'password') {
-                const mockUser = {
-                    id: 1,
-                    email: 'admin@msv.edu.ng',
-                    first_name: 'Admin',
-                    last_name: 'User',
-                    role: 'admin',
-                    school_id: 1,
-                }
-                localStorage.setItem('token', 'mock-jwt-token')
-                localStorage.setItem('user', JSON.stringify(mockUser))
-                router.push('/dashboard')
-            } else if (email === 'staff@msv.edu.ng' && password === 'password') {
-                const mockUser = {
-                    id: 2,
-                    email: 'staff@msv.edu.ng',
-                    first_name: 'Staff',
-                    last_name: 'Member',
-                    role: 'staff',
-                    school_id: 1,
-                }
-                localStorage.setItem('token', 'mock-jwt-token')
-                localStorage.setItem('user', JSON.stringify(mockUser))
-                router.push('/dashboard')
-            } else if (email === 'parent@msv.edu.ng' && password === 'password') {
-                const mockUser = {
-                    id: 3,
-                    email: 'parent@msv.edu.ng',
-                    first_name: 'Parent',
-                    last_name: 'User',
-                    role: 'parent',
-                    school_id: 1,
-                }
-                localStorage.setItem('token', 'mock-jwt-token')
-                localStorage.setItem('user', JSON.stringify(mockUser))
+            if (response.data.success) {
+                const { token, user } = response.data.data
+                localStorage.setItem('token', token)
+                localStorage.setItem('user', JSON.stringify(user))
                 router.push('/dashboard')
             } else {
-                setError('Invalid email or password')
+                setError(response.data.error || 'Login failed')
             }
-        } catch (err) {
-            setError('Login failed. Please try again.')
+        } catch (err: any) {
+            setError(err.response?.data?.error || 'Login failed. Please try again.')
         } finally {
             setLoading(false)
         }
