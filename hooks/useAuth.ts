@@ -1,3 +1,4 @@
+// hooks/useAuth.ts
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -8,9 +9,15 @@ export function useAuth() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        setUser(getUser())
+        const storedUser = getUser()
+        setUser(storedUser)
         setLoading(false)
     }, [])
 
-    return { user, loading, isAuthenticated: isAuthenticated(), logout }
+    return {
+        user,
+        loading,
+        isAuthenticated: isAuthenticated(),
+        logout
+    }
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import api from '@/lib/api'  // This now works with default export
+import api from '@/lib/api'
 import {
     UsersIcon,
     UserGroupIcon,
@@ -11,10 +11,20 @@ import {
     CheckCircleIcon,
 } from '@heroicons/react/24/outline'
 
+interface DashboardStats {
+    students: number
+    staff: number
+    parents: number
+    current_term: {
+        session_name: string
+        term_name: string
+    } | null
+}
+
 export default function DashboardPage() {
-    const { user } = useAuth()
-    const [stats, setStats] = useState<any>(null)
-    const [loading, setLoading] = useState(true)
+    const { user, loading: authLoading } = useAuth()
+    const [stats, setStats] = useState<DashboardStats | null>(null)
+    const [statsLoading, setStatsLoading] = useState(true)
 
     useEffect(() => {
         if (user) {
@@ -31,11 +41,12 @@ export default function DashboardPage() {
         } catch (error) {
             console.error('Failed to fetch stats:', error)
         } finally {
-            setLoading(false)
+            setStatsLoading(false)
         }
     }
 
-    if (loading) {
+    // Show loading state while checking authentication
+    if (authLoading) {
         return (
             <div className="flex justify-center items-center h-64">
                 <div className="text-center">
@@ -46,8 +57,27 @@ export default function DashboardPage() {
         )
     }
 
+    // If no user is logged in, show message (shouldn't happen due to protected route)
+    if (!user) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="text-center">
+                    <p className="text-gray-500">Please log in to view the dashboard.</p>
+                </div>
+            </div>
+        )
+    }
+
     // Admin Dashboard with real data
-    if (user?.role === 'admin' || user?.role === 'super_admin') {
+    if (user.role === 'admin' || user.role === 'super_admin') {
+        if (statsLoading) {
+            return (
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1c3877] mx-auto"></div>
+                </div>
+            )
+        }
+
         return (
             <div>
                 <div className="mb-6">
@@ -88,7 +118,7 @@ export default function DashboardPage() {
     }
 
     // Staff Dashboard
-    if (user?.role === 'staff') {
+    if (user.role === 'staff') {
         return (
             <div>
                 <div className="mb-6">
@@ -137,7 +167,15 @@ export default function DashboardPage() {
 }
 
 // Helper Components
-function StatCard({ title, value, icon: Icon, trend, color }: any) {
+interface StatCardProps {
+    title: string
+    value: string | number
+    icon: React.ComponentType<{ className?: string }>
+    trend: string
+    color: 'blue' | 'green' | 'purple' | 'orange'
+}
+
+function StatCard({ title, value, icon: Icon, trend, color }: StatCardProps) {
     const colorClasses: Record<string, string> = {
         blue: 'bg-blue-50 text-blue-600',
         green: 'bg-green-50 text-green-600',
@@ -153,7 +191,7 @@ function StatCard({ title, value, icon: Icon, trend, color }: any) {
                     <p className="text-2xl font-bold text-gray-800 mt-1">{value}</p>
                     <p className="text-xs text-gray-400 mt-2">{trend}</p>
                 </div>
-                <div className={`h-12 w-12 rounded-full flex items-center justify-center ${colorClasses[color] || 'bg-gray-50 text-gray-600'}`}>
+                <div className={`h-12 w-12 rounded-full flex items-center justify-center ${colorClasses[color]}`}>
                     <Icon className="h-6 w-6" />
                 </div>
             </div>
@@ -161,7 +199,13 @@ function StatCard({ title, value, icon: Icon, trend, color }: any) {
     )
 }
 
-function ActivityItem({ title, time, type }: { title: string; time: string; type: string }) {
+interface ActivityItemProps {
+    title: string
+    time: string
+    type: 'student' | 'staff' | 'fee'
+}
+
+function ActivityItem({ title, time, type }: ActivityItemProps) {
     const typeColors: Record<string, string> = {
         student: 'bg-blue-100 text-blue-700',
         staff: 'bg-green-100 text-green-700',
@@ -174,14 +218,20 @@ function ActivityItem({ title, time, type }: { title: string; time: string; type
                 <p className="text-sm font-medium text-gray-700">{title}</p>
                 <p className="text-xs text-gray-400">{time}</p>
             </div>
-            <span className={`text-xs px-2 py-1 rounded-full ${typeColors[type] || 'bg-gray-100 text-gray-600'}`}>
+            <span className={`text-xs px-2 py-1 rounded-full ${typeColors[type]}`}>
                 {type}
             </span>
         </div>
     )
 }
 
-function QuickActionItem({ title, link, icon }: { title: string; link: string; icon: string }) {
+interface QuickActionItemProps {
+    title: string
+    link: string
+    icon: string
+}
+
+function QuickActionItem({ title, link, icon }: QuickActionItemProps) {
     return (
         <a
             href={link}
